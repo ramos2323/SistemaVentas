@@ -1,0 +1,55 @@
+﻿@model SistemaVentas.Models.Cliente
+@{ ViewBag.Title = "Editar Cliente"; }
+
+<div class="ph">
+    <div><div class="ph-title"><i class="bi bi-pencil"></i> Editar Cliente</div></div>
+    <a href="/Clientes" class="btn-s"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+<div class="card-dark" style="max-width:520px">
+    <div style="padding:1.5rem">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.FechaRegistro)
+            <style>
+                .fi {
+                    width: 100%;
+                    background: var(--surface2);
+                    border: 1px solid var(--border);
+                    border-radius: 10px;
+                    padding: .68rem 1rem;
+                    color: var(--text);
+                    font-family: var(--fb);
+                    font-size: .9rem;
+                    outline: none;
+                    transition: border-color .2s;
+                    margin-bottom: 1.2rem;
+                }
+
+                    .fi:focus {
+                        border-color: var(--accent);
+                        box-shadow: 0 0 0 3px rgba(79,142,247,.12);
+                    }
+
+                .fl {
+                    display: block;
+                    font-size: .75rem;
+                    font-weight: 600;
+                    color: var(--text3);
+                    letter-spacing: .05em;
+                    text-transform: uppercase;
+                    margin-bottom: .42rem;
+                }
+            </style>
+            <label class="fl">Nombre</label>@Html.TextBoxFor(m => m.Nombre, new { @class = "fi" })
+            <label class="fl">Email</label>@Html.TextBoxFor(m => m.Email, new { @class = "fi" })
+            <label class="fl">Teléfono</label>@Html.TextBoxFor(m => m.Telefono, new { @class = "fi" })
+            <label class="fl">Dirección</label>@Html.TextBoxFor(m => m.Direccion, new { @class = "fi" })
+            <div style="display:flex;gap:.5rem">
+                <button type="submit" class="btn-p"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a href="/Clientes" class="btn-s">Cancelar</a>
+            </div>
+        }
+    </div>
+</div>

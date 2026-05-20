@@ -1,0 +1,24 @@
+﻿@model SistemaVentas.Models.Producto
+@{ ViewBag.Title = "Eliminar Producto"; }
+
+<div class="ph">
+    <div><div class="ph-title" style="color:#f87171"><i class="bi bi-trash"></i> Eliminar Producto</div></div>
+    <a href="/Productos" class="btn-s"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+<div class="card-dark" style="max-width:480px;border-color:rgba(239,68,68,.25)">
+    <div style="padding:1.5rem;text-align:center">
+        <div style="width:60px;height:60px;background:rgba(239,68,68,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+            <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;color:#f87171"></i>
+        </div>
+        <p style="color:var(--text2);margin-bottom:1.5rem">¿Eliminar <strong style="color:var(--text)">@Model.Nombre</strong>? Esta acción no se puede deshacer.</p>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            <div style="display:flex;gap:.5rem;justify-content:center">
+                <button type="submit" class="btn-danger"><i class="bi bi-trash"></i> Sí, eliminar</button>
+                <a href="/Productos" class="btn-s">Cancelar</a>
+            </div>
+        }
+    </div>
+</div>
