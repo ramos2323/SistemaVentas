@@ -1,0 +1,39 @@
+﻿@model IEnumerable<SistemaVentas.Models.Producto>
+@{ ViewBag.Title = "Productos"; }
+
+<div class="ph">
+    <div><div class="ph-title"><i class="bi bi-box-seam"></i> Productos</div><div class="ph-sub">@Model.Count() producto(s)</div></div>
+    <div style="display:flex;gap:.5rem">
+        <a href="/Productos/Inventario" class="btn-s"><i class="bi bi-clipboard-data"></i> Inventario</a>
+        <a href="/Productos/Create" class="btn-p"><i class="bi bi-plus-lg"></i> Nuevo</a>
+    </div>
+</div>
+<div class="card-dark">
+    <table class="sv-table">
+        <thead><tr><th>#</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td style="color:var(--text3);font-size:.8rem">#@p.Id</td>
+                    <td style="color:var(--text);font-weight:500">@p.Nombre</td>
+                    <td><span class="b-blue">@p.Categoria.Nombre</span></td>
+                    <td class="text-g">$@p.Precio.ToString("N2")</td>
+                    <td>
+                        @if (p.Stock == 0)
+                        {<span class="b-red">Agotado</span>}
+                        else if (p.Stock < 10)
+                        {<span class="b-yellow">@p.Stock bajo</span>}
+                    else
+                    {<span class="b-green">@p.Stock</span>}
+                    </td>
+                    <td>@(p.Activo ? Html.Raw("<span class=\"b-green\">Activo</span>") : Html.Raw("<span class=\"b-red\">Inactivo</span>"))</td>
+                    <td style="display:flex;gap:.3rem">
+                        <a href="/Productos/Edit/@p.Id" class="bi-btn"><i class="bi bi-pencil"></i></a>
+                        <a href="/Productos/Delete/@p.Id" class="bi-btn bi-btn-d"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

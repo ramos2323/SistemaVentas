@@ -1,0 +1,63 @@
+﻿@model SistemaVentas.Models.Usuario
+@{ ViewBag.Title = "Editar Usuario"; }
+
+<div class="ph">
+    <div><div class="ph-title"><i class="bi bi-pencil"></i> Editar Usuario</div></div>
+    <a href="/Usuarios" class="btn-s"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+<div class="card-dark" style="max-width:500px">
+    <div style="padding:1.5rem">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.FechaCreacion)
+            @Html.HiddenFor(m => m.PasswordHash)
+            <style>
+                .fi {
+                    width: 100%;
+                    background: var(--surface2);
+                    border: 1px solid var(--border);
+                    border-radius: 10px;
+                    padding: .68rem 1rem;
+                    color: var(--text);
+                    font-family: var(--fb);
+                    font-size: .9rem;
+                    outline: none;
+                    transition: border-color .2s;
+                    margin-bottom: 1.2rem;
+                }
+
+                    .fi:focus {
+                        border-color: var(--accent);
+                        box-shadow: 0 0 0 3px rgba(79,142,247,.12);
+                    }
+
+                .fl {
+                    display: block;
+                    font-size: .75rem;
+                    font-weight: 600;
+                    color: var(--text3);
+                    letter-spacing: .05em;
+                    text-transform: uppercase;
+                    margin-bottom: .42rem;
+                }
+            </style>
+            <label class="fl">Nombre</label>@Html.TextBoxFor(m => m.Nombre, new { @class = "fi" })
+            <label class="fl">Email</label>@Html.TextBoxFor(m => m.Email, new { @class = "fi" })
+            <label class="fl">Nueva contraseña <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(vacío = sin cambio)</span></label>
+            <input type="password" name="NuevoPassword" class="fi" placeholder="••••••••" />
+            <label class="fl">Rol</label>
+            <select name="Rol" class="fi" style="appearance:none">
+                <option value="Vendedor" @(Model.Rol == "Vendedor" ? "selected" : "")>Vendedor</option>
+                <option value="Admin" @(Model.Rol == "Admin" ? "selected" : "")>Admin</option>
+            </select>
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.88rem;color:var(--text2);margin-bottom:1.2rem">
+                <input type="checkbox" name="Activo" value="true" @(Model.Activo ? "checked" : "") style="width:16px;height:16px;accent-color:var(--accent)" />
+                Usuario activo
+            </label>
+            <input type="hidden" name="Activo" value="false" />
+            <div style="display:flex;gap:.5rem"><button type="submit" class="btn-p"><i class="bi bi-check-lg"></i> Guardar</button><a href="/Usuarios" class="btn-s">Cancelar</a></div>
+        }
+    </div>
+</div>

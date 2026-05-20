@@ -1,0 +1,37 @@
+﻿@model IEnumerable<SistemaVentas.Models.Venta>
+@{ ViewBag.Title = "Ventas"; }
+
+<div class="ph">
+    <div>
+        <div class="ph-title"><i class="bi bi-cart3" style="font-size:1.3rem"></i> Ventas</div>
+        <div class="ph-sub">@Model.Count() venta(s) registrada(s)</div>
+    </div>
+    <div style="display:flex;gap:.5rem">
+        <a href="/Ventas/Reporte" class="btn-s"><i class="bi bi-bar-chart"></i> Reporte</a>
+        <a href="/Ventas/Create" class="btn-p"><i class="bi bi-plus-lg"></i> Nueva Venta</a>
+    </div>
+</div>
+
+<div class="card-dark">
+    <table class="sv-table">
+        <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Vendedor</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td style="color:var(--text3);font-size:.8rem">#@v.Id</td>
+                    <td style="font-size:.82rem">@v.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="color:var(--text)">@v.Cliente.Nombre</td>
+                    <td>@v.Usuario.Nombre</td>
+                    <td class="text-g fw7">$@v.Total.ToString("N2")</td>
+                    <td><span class="b-green">@v.Estado</span></td>
+                    <td><a href="/Ventas/Details/@v.Id" class="bi-btn"><i class="bi bi-eye"></i></a></td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--text3)">Sin ventas registradas — <a href="/Ventas/Create">Crear primera venta</a></td></tr>
+            }
+        </tbody>
+    </table>
+</div>

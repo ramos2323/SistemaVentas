@@ -1,0 +1,28 @@
+﻿@model IEnumerable<SistemaVentas.Models.Cliente>
+@{ ViewBag.Title = "Clientes"; }
+
+<div class="ph">
+    <div><div class="ph-title"><i class="bi bi-people"></i> Clientes</div><div class="ph-sub">@Model.Count() cliente(s)</div></div>
+    <a href="/Clientes/Create" class="btn-p"><i class="bi bi-plus-lg"></i> Nuevo</a>
+</div>
+<div class="card-dark">
+    <table class="sv-table">
+        <thead><tr><th>#</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Registro</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td style="color:var(--text3);font-size:.8rem">#@c.Id</td>
+                    <td style="color:var(--text);font-weight:500">@c.Nombre</td>
+                    <td style="font-size:.85rem">@c.Email</td>
+                    <td>@c.Telefono</td>
+                    <td style="font-size:.8rem;color:var(--text3)">@c.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                    <td style="display:flex;gap:.3rem">
+                        <a href="/Clientes/Edit/@c.Id" class="bi-btn"><i class="bi bi-pencil"></i></a>
+                        <a href="/Clientes/Delete/@c.Id" class="bi-btn bi-btn-d"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

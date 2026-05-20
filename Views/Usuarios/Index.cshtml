@@ -1,0 +1,31 @@
+﻿@model IEnumerable<SistemaVentas.Models.Usuario>
+@{ ViewBag.Title = "Usuarios"; }
+
+<div class="ph">
+    <div><div class="ph-title"><i class="bi bi-shield-person"></i> Usuarios</div><div class="ph-sub">@Model.Count() usuario(s)</div></div>
+    <a href="/Usuarios/Create" class="btn-p"><i class="bi bi-plus-lg"></i> Nuevo</a>
+</div>
+@if (TempData["Error"] != null)
+{<div class="alert-d" style="margin-bottom:1rem"><i class="bi bi-exclamation-triangle"></i> @TempData["Error"]</div>}
+<div class="card-dark">
+    <table class="sv-table">
+        <thead><tr><th>#</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td style="color:var(--text3);font-size:.8rem">#@u.Id</td>
+                    <td style="color:var(--text);font-weight:500">@u.Nombre</td>
+                    <td style="font-size:.85rem">@u.Email</td>
+                    <td>@(u.Rol=="Admin"?Html.Raw("<span class=\"b-red\">Admin</span>"):Html.Raw("<span class=\"b-blue\">Vendedor</span>"))</td>
+                    <td>@(u.Activo?Html.Raw("<span class=\"b-green\">Activo</span>"):Html.Raw("<span class=\"b-red\">Inactivo</span>"))</td>
+                    <td style="display:flex;gap:.3rem">
+                        <a href="/Usuarios/Edit/@u.Id" class="bi-btn"><i class="bi bi-pencil"></i></a>
+                        @if ((int)Session["UsuarioId"] != u.Id)
+                        {<a href="/Usuarios/Delete/@u.Id" class="bi-btn bi-btn-d"><i class="bi bi-trash"></i></a>}
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

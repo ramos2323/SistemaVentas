@@ -1,0 +1,82 @@
+﻿@model SistemaVentas.Models.Venta
+@{
+    ViewBag.Title = "Detalle Venta #" + Model.Id;
+}
+
+<div class="ph">
+    <div>
+        <div class="ph-title">Venta <span style="color:var(--accent)">#@Model.Id</span></div>
+        <div class="ph-sub">@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+    </div>
+    <a href="/Ventas" class="btn-s"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<div class="g2" style="align-items:start">
+
+    <!-- Info de la venta -->
+    <div class="card-dark">
+        <div class="card-dark-header"><i class="bi bi-info-circle"></i> Información</div>
+        <div style="padding:1.25rem">
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Cliente</span>
+                <span style="font-weight:600;color:var(--text)">@Model.Cliente.Nombre</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Vendedor</span>
+                <span style="font-weight:600;color:var(--text)">@Model.Usuario.Nombre</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Estado</span>
+                <span class="b-green">@Model.Estado</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Fecha</span>
+                <span style="font-weight:600;color:var(--text)">@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Observacion))
+            {
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)">
+                    <span style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Observación</span>
+                    <span style="font-weight:600;color:var(--text)">@Model.Observacion</span>
+                </div>
+            }
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 0;margin-top:.25rem">
+                <span style="font-size:.85rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Total</span>
+                <span style="font-family:var(--fh);font-size:1.6rem;font-weight:800;color:#4ade80">$@Model.Total.ToString("N2")</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalle de productos -->
+    <div class="card-dark">
+        <div class="card-dark-header"><i class="bi bi-box-seam"></i> Productos comprados</div>
+        <table class="sv-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unit.</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model.DetalleVentas)
+                {
+                    <tr>
+                        <td style="color:var(--text);font-weight:500">@d.Producto.Nombre</td>
+                        <td>$@d.PrecioUnitario.ToString("N2")</td>
+                        <td><span class="b-blue">@d.Cantidad</span></td>
+                        <td class="text-g fw7">$@d.Subtotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

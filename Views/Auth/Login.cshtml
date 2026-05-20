@@ -1,0 +1,275 @@
+﻿@{
+    ViewBag.Title = "Iniciar Sesión";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Ventas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:        #0a0c10;
+            --panel:     #111318;
+            --border:    #1e2330;
+            --accent:    #4f8ef7;
+            --accent2:   #7c5cfc;
+            --text:      #e8eaf0;
+            --muted:     #6b7280;
+            --danger:    #f87171;
+            --input-bg:  #161a24;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo con orbes animados */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.18;
+            animation: drift 12s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        .bg-orb-1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, #4f8ef7, transparent);
+            top: -150px; left: -100px;
+            animation-delay: 0s;
+        }
+        .bg-orb-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, #7c5cfc, transparent);
+            bottom: -100px; right: -80px;
+            animation-delay: -5s;
+        }
+        .bg-orb-3 {
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, #06b6d4, transparent);
+            top: 50%; left: 60%;
+            animation-delay: -3s;
+            opacity: 0.1;
+        }
+
+        @@keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 20px) scale(1.08); }
+        }
+
+        /* Grid pattern sutil */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        /* Card principal */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            padding: 1rem;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @@keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow:
+                0 0 0 1px rgba(79,142,247,0.06),
+                0 24px 60px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        /* Logo / marca */
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .brand-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 24px rgba(79,142,247,0.35);
+        }
+        .brand-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.03em;
+        }
+        .brand-subtitle {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 0.25rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* Alerta error */
+        .alert-error {
+            background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.25);
+            color: var(--danger);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Campos */
+        .field {
+            margin-bottom: 1.25rem;
+        }
+        .field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .field input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .field input::placeholder { color: #3a4050; }
+        .field input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+        }
+
+        /* Botón */
+        .btn-login {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(79,142,247,0.3);
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .btn-login:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(79,142,247,0.4); }
+        .btn-login:hover::before { opacity: 1; }
+        .btn-login:active { transform: translateY(0); }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 1.75rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+            letter-spacing: 0.03em;
+        }
+        .divider span {
+            color: var(--accent);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <div class="brand">
+                <div class="brand-icon">🛒</div>
+                <div class="brand-title">SistemaVentas</div>
+                <div class="brand-subtitle">Panel de Administración</div>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert-error">
+                    <span>⚠</span> @ViewBag.Error
+                </div>
+            }
+
+            @using (Html.BeginForm("Login", "Auth", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="field">
+                    <label>Correo electrónico</label>
+                    <input type="email" name="email" placeholder="usuario@empresa.com" required />
+                </div>
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" placeholder="••••••••" required />
+                </div>
+                <button type="submit" class="btn-login">Ingresar al sistema →</button>
+            }
+
+            <div class="divider">
+                Acceso restringido &mdash; <span>Solo personal autorizado</span>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

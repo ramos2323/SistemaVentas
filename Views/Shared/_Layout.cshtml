@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - SistemaVentas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg:       #080a0f;
+            --surface:  #0e1117;
+            --surface2: #131720;
+            --border:   #1c2133;
+            --border2:  #252d3f;
+            --accent:   #4f8ef7;
+            --accent2:  #7c5cfc;
+            --accent-g: linear-gradient(135deg,#4f8ef7,#7c5cfc);
+            --green:    #22c55e;
+            --yellow:   #f59e0b;
+            --red:      #ef4444;
+            --text:     #e2e8f0;
+            --text2:    #94a3b8;
+            --text3:    #4a5568;
+            --fh:       'Syne',sans-serif;
+            --fb:       'DM Sans',sans-serif;
+            --r:        12px;
+            --rl:       18px;
+        }
+        html,body{height:100%;}
+        body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;}
+        ::-webkit-scrollbar{width:6px;}
+        ::-webkit-scrollbar-track{background:var(--bg);}
+        ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+        /* NAVBAR */
+        .sv-nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+        .sv-brand{font-family:var(--fh);font-weight:800;font-size:1.05rem;color:var(--text)!important;text-decoration:none;display:flex;align-items:center;gap:.6rem;letter-spacing:-.02em;}
+        .sv-brand-icon{width:32px;height:32px;background:var(--accent-g);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 4px 12px rgba(79,142,247,.3);}
+        .sv-nav-links{display:flex;align-items:center;gap:.2rem;list-style:none;}
+        .sv-nav-links a{display:flex;align-items:center;gap:.4rem;padding:.38rem .7rem;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--text2)!important;text-decoration:none;transition:background .15s,color .15s;white-space:nowrap;}
+        .sv-nav-links a:hover{background:var(--surface2);color:var(--text)!important;}
+        .sv-nav-links a i{font-size:.88rem;}
+        .sv-nav-right{display:flex;align-items:center;gap:.6rem;}
+        .sv-user{display:flex;align-items:center;gap:.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:.3rem .7rem .3rem .3rem;font-size:.8rem;color:var(--text2);}
+        .sv-avatar{width:26px;height:26px;background:var(--accent-g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;font-weight:700;}
+        .sv-badge{font-size:.65rem;font-weight:700;padding:.18rem .45rem;border-radius:999px;letter-spacing:.04em;text-transform:uppercase;}
+        .sv-badge-admin{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25);}
+        .sv-badge-vend{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25);}
+        .sv-logout{display:flex;align-items:center;gap:.35rem;padding:.38rem .7rem;border-radius:8px;font-size:.8rem;color:var(--text3);text-decoration:none;border:1px solid transparent;transition:.15s;}
+        .sv-logout:hover{background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.2);}
+
+        /* LAYOUT */
+        .sv-main{max-width:1280px;margin:0 auto;padding:2rem;}
+
+        /* CARDS */
+        .card-dark{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;}
+        .card-dark-header{padding:.85rem 1.4rem;border-bottom:1px solid var(--border);font-family:var(--fh);font-size:.75rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
+
+        /* TABLE */
+        .sv-table{width:100%;border-collapse:collapse;font-size:.87rem;}
+        .sv-table thead tr{border-bottom:1px solid var(--border);}
+        .sv-table thead th{padding:.8rem 1.2rem;font-family:var(--fh);font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+        .sv-table tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s;}
+        .sv-table tbody tr:hover{background:var(--surface2);}
+        .sv-table tbody td{padding:.8rem 1.2rem;color:var(--text2);vertical-align:middle;}
+
+        /* BADGES */
+        .b-green{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.2);padding:.22rem .55rem;border-radius:999px;font-size:.73rem;font-weight:600;}
+        .b-yellow{background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.2);padding:.22rem .55rem;border-radius:999px;font-size:.73rem;font-weight:600;}
+        .b-red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2);padding:.22rem .55rem;border-radius:999px;font-size:.73rem;font-weight:600;}
+        .b-blue{background:rgba(79,142,247,.12);color:#93c5fd;border:1px solid rgba(79,142,247,.2);padding:.22rem .55rem;border-radius:999px;font-size:.73rem;font-weight:600;}
+
+        /* BUTTONS */
+        .btn-p{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent-g);color:#fff!important;border:none;border-radius:10px;padding:.58rem 1.2rem;font-family:var(--fh);font-size:.83rem;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .2s,transform .15s,box-shadow .2s;box-shadow:0 4px 14px rgba(79,142,247,.28);white-space:nowrap;}
+        .btn-p:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,142,247,.38);}
+        .btn-s{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface2);color:var(--text2)!important;border:1px solid var(--border2);border-radius:10px;padding:.58rem 1.2rem;font-size:.83rem;font-weight:500;cursor:pointer;text-decoration:none;transition:.15s;}
+        .btn-s:hover{background:var(--border);color:var(--text)!important;}
+        .btn-danger{display:inline-flex;align-items:center;gap:.4rem;background:rgba(239,68,68,.15);color:#f87171!important;border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:.58rem 1.2rem;font-size:.83rem;font-weight:600;cursor:pointer;text-decoration:none;transition:.15s;}
+        .btn-danger:hover{background:rgba(239,68,68,.25);}
+        .bi-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);text-decoration:none;font-size:.82rem;transition:.15s;}
+        .bi-btn:hover{background:var(--border2);color:var(--text);}
+        .bi-btn-d:hover{background:rgba(239,68,68,.12);color:#f87171;border-color:rgba(239,68,68,.3);}
+
+        /* PAGE HEADER */
+        .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem;}
+        .ph-title{font-family:var(--fh);font-size:1.55rem;font-weight:800;color:var(--text);letter-spacing:-.03em;}
+        .ph-sub{font-size:.8rem;color:var(--text3);margin-top:.2rem;}
+
+        /* STAT CARDS */
+        .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.2rem 1.4rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s,transform .2s;}
+        .stat:hover{border-color:var(--border2);transform:translateY(-2px);}
+        .stat-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
+        .stat-lbl{font-size:.75rem;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.05em;}
+        .stat-val{font-family:var(--fh);font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:-.03em;line-height:1;margin-top:.2rem;}
+
+        /* GRID */
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+        .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+        @@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr);}.g3{grid-template-columns:repeat(2,1fr);}.sv-nav{padding:0 1rem;}.sv-main{padding:1.5rem 1rem;}}
+        @@media(max-width:600px){.g4,.g3,.g2{grid-template-columns:1fr;}}
+
+        /* FORMS */
+        .fd label{display:block;font-size:.75rem;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.42rem;}
+        .fd input,.fd select,.fd textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.68rem 1rem;color:var(--text);font-family:var(--fb);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;}
+        .fd input::placeholder,.fd textarea::placeholder{color:var(--text3);}
+        .fd input:focus,.fd select:focus,.fd textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,142,247,.12);}
+        .fd .field{margin-bottom:1.2rem;}
+        .fd .field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .fd .err{color:#f87171;font-size:.76rem;margin-top:.28rem;display:block;}
+        .fd-check{display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.88rem;color:var(--text2);}
+        .fd-check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;}
+
+        /* ALERTS */
+        .alert-d{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;border-radius:var(--r);padding:.8rem 1rem;font-size:.86rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;}
+        .alert-w{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24;border-radius:var(--r);padding:.8rem 1rem;font-size:.86rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;}
+
+        /* MISC */
+        a{color:var(--accent);text-decoration:none;}
+        a:hover{color:#93c5fd;}
+        .text-g{color:#4ade80;} .text-r{color:#f87171;} .text-y{color:#fbbf24;} .text-m{color:var(--text3);}
+        .fw7{font-weight:700;} .mt1{margin-top:.5rem;} .mb2{margin-bottom:.75rem;} .mb3{margin-bottom:1rem;}
+        .df{display:flex;} .ac{align-items:center;} .g1{gap:.35rem;} .g2u{gap:.5rem;} .jb{justify-content:space-between;}
+    </style>
+</head>
+<body>
+    <nav class="sv-nav">
+        <a class="sv-brand" href="/">
+            <div class="sv-brand-icon">🛒</div>
+            SistemaVentas
+        </a>
+        <ul class="sv-nav-links">
+            <li><a href="/Ventas"><i class="bi bi-cart3"></i> Ventas</a></li>
+            <li><a href="/Productos"><i class="bi bi-box-seam"></i> Productos</a></li>
+            <li><a href="/Clientes"><i class="bi bi-people"></i> Clientes</a></li>
+            @if (Session["UsuarioRol"] != null && Session["UsuarioRol"].ToString() == "Admin")
+            {
+                <li><a href="/Categorias"><i class="bi bi-tags"></i> Categorías</a></li>
+                <li><a href="/Usuarios"><i class="bi bi-shield-person"></i> Usuarios</a></li>
+                <li><a href="/Reportes"><i class="bi bi-bar-chart-line"></i> Reportes</a></li>
+            }
+        </ul>
+        <div class="sv-nav-right">
+            <div class="sv-user">
+                <div class="sv-avatar">@(Session["UsuarioNombre"] != null ? Session["UsuarioNombre"].ToString().Substring(0,1).ToUpper() : "?")</div>
+                <span>@Session["UsuarioNombre"]</span>
+                @if (Session["UsuarioRol"] != null && Session["UsuarioRol"].ToString() == "Admin")
+                {<span class="sv-badge sv-badge-admin">Admin</span> }
+                else
+                { <span class="sv-badge sv-badge-vend">Vendedor</span>}
+            </div>
+            <a class="sv-logout" href="/Auth/Logout"><i class="bi bi-box-arrow-right"></i> Salir</a>
+        </div>
+    </nav>
+    <div class="sv-main">@RenderBody()</div>
+</body>
+</html>
