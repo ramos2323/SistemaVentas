@@ -10,6 +10,36 @@ namespace SistemaVentas.Controllers
     public class ProductosController : Controller
     {
         private SistemaVentasContext db = new SistemaVentasContext();
+        [HttpGet]
+        public ActionResult Buscar(string q)
+        {
+            var productos = db.Productos
+                .Include("Categoria")
+                .Where(p => p.Activo)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                productos = productos.Where(p =>
+                    p.Nombre.ToLower().Contains(q) ||
+                    p.Categoria.Nombre.ToLower().Contains(q) ||
+                    p.Descripcion.ToLower().Contains(q)
+                );
+            }
+
+            var resultado = productos.Select(p => new {
+                p.Id,
+                p.Nombre,
+                Categoria = p.Categoria.Nombre,
+                p.Precio,
+                p.Stock,
+                p.Activo
+            }).ToList();
+
+            return Json(resultado, JsonRequestBehavior.AllowGet);
+        }
+
 
         public ActionResult Index()
         {
@@ -61,8 +91,14 @@ namespace SistemaVentas.Controllers
 
         public ActionResult Delete(int id)
         {
+            if (!EstaLogueado()) return RedirectToAction("Login", "Auth");
             var producto = db.Productos.Include("Categoria").FirstOrDefault(p => p.Id == id);
             if (producto == null) return HttpNotFound();
+
+            bool tieneVentas = db.DetalleVentas.Any(d => d.ProductoId == id);
+            ViewBag.TieneVentas = tieneVentas;
+            ViewBag.TotalVentas = db.DetalleVentas.Count(d => d.ProductoId == id);
+
             return View(producto);
         }
 
@@ -70,11 +106,22 @@ namespace SistemaVentas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            if (!EstaLogueado()) return RedirectToAction("Login", "Auth");
+
+            bool tieneVentas = db.DetalleVentas.Any(d => d.ProductoId == id);
+            if (tieneVentas)
+            {
+                TempData["Error"] = "No se puede eliminar este producto porque aparece en ventas registradas.";
+                return RedirectToAction("Index");
+            }
+
             var producto = db.Productos.Find(id);
             db.Productos.Remove(producto);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        private bool EstaLogueado() => Session["UsuarioId"] != null;
 
         // Vista de inventario
         public ActionResult Inventario()

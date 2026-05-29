@@ -10,6 +10,47 @@ namespace SistemaVentas.Controllers
     public class VentasController : Controller
     {
         private SistemaVentasContext db = new SistemaVentasContext();
+        [HttpGet]
+        public ActionResult Buscar(string q, string desde, string hasta)
+        {
+            var ventas = db.Ventas
+                .Include("Cliente")
+                .Include("Usuario")
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                ventas = ventas.Where(v =>
+                    v.Cliente.Nombre.ToLower().Contains(q) ||
+                    v.Usuario.Nombre.ToLower().Contains(q) ||
+                    v.Estado.ToLower().Contains(q)
+                );
+            }
+
+            if (!string.IsNullOrEmpty(desde))
+            {
+                DateTime fechaDesde = DateTime.Parse(desde);
+                ventas = ventas.Where(v => v.Fecha >= fechaDesde);
+            }
+
+            if (!string.IsNullOrEmpty(hasta))
+            {
+                DateTime fechaHasta = DateTime.Parse(hasta).AddDays(1);
+                ventas = ventas.Where(v => v.Fecha <= fechaHasta);
+            }
+
+            var resultado = ventas.OrderByDescending(v => v.Fecha).Select(v => new {
+                v.Id,
+                Cliente = v.Cliente.Nombre,
+                Vendedor = v.Usuario.Nombre,
+                Fecha = v.Fecha.ToString(),
+                v.Total,
+                v.Estado
+            }).ToList();
+
+            return Json(resultado, JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult Index()
         {

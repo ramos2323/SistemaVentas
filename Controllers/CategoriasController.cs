@@ -54,10 +54,18 @@ namespace SistemaVentas.Controllers
             return View(categoria);
         }
 
+
+
         public ActionResult Delete(int id)
         {
+            if (!EstaLogueado()) return RedirectToAction("Login", "Auth");
             var categoria = db.Categorias.Find(id);
             if (categoria == null) return HttpNotFound();
+
+            bool tieneProductos = db.Productos.Any(p => p.CategoriaId == id);
+            ViewBag.TieneProductos = tieneProductos;
+            ViewBag.TotalProductos = db.Productos.Count(p => p.CategoriaId == id);
+
             return View(categoria);
         }
 
@@ -65,11 +73,23 @@ namespace SistemaVentas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            if (!EstaLogueado()) return RedirectToAction("Login", "Auth");
+
+            bool tieneProductos = db.Productos.Any(p => p.CategoriaId == id);
+            if (tieneProductos)
+            {
+                TempData["Error"] = "No se puede eliminar esta categoría porque tiene productos asociados.";
+                return RedirectToAction("Index");
+            }
+
             var categoria = db.Categorias.Find(id);
             db.Categorias.Remove(categoria);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        private bool EstaLogueado() => Session["UsuarioId"] != null;
+
 
         protected override void Dispose(bool disposing)
         {

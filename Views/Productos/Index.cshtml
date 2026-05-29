@@ -2,16 +2,60 @@
 @{ ViewBag.Title = "Productos"; }
 
 <div class="ph">
-    <div><div class="ph-title"><i class="bi bi-box-seam"></i> Productos</div><div class="ph-sub">@Model.Count() producto(s)</div></div>
+    <div><div class="ph-title"><i class="bi bi-box-seam"></i> Productos</div><div class="ph-sub" id="contador">@Model.Count() producto(s)</div></div>
     <div style="display:flex;gap:.5rem">
         <a href="/Productos/Inventario" class="btn-s"><i class="bi bi-clipboard-data"></i> Inventario</a>
         <a href="/Productos/Create" class="btn-p"><i class="bi bi-plus-lg"></i> Nuevo</a>
     </div>
 </div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert-d" style="margin-bottom:1rem"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]</div>
+}
+
+<!-- BUSCADOR AJAX -->
+<div class="card-dark" style="padding:1rem;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;gap:.75rem">
+        <div style="position:relative;flex:1">
+            <i class="bi bi-search" style="position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.9rem"></i>
+            <input type="text" id="buscador" placeholder="Buscar por nombre, categoría..."
+                   style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.68rem 1rem .68rem 2.5rem;color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s"
+                   onfocus="this.style.borderColor='var(--accent)'"
+                   onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <div id="spinner" style="display:none;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite"></div>
+    </div>
+</div>
+
+<style>
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .tr-fade {
+        animation: fadeIn .2s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
 <div class="card-dark">
     <table class="sv-table">
         <thead><tr><th>#</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
-        <tbody>
+        <tbody id="tabla-productos">
             @foreach (var p in Model)
             {
                 <tr>
@@ -21,11 +65,11 @@
                     <td class="text-g">$@p.Precio.ToString("N2")</td>
                     <td>
                         @if (p.Stock == 0)
-                        {<span class="b-red">Agotado</span>}
+                        {<span class="b-red">Agotado</span> }
                         else if (p.Stock < 10)
-                        {<span class="b-yellow">@p.Stock bajo</span>}
+                        { <span class="b-yellow">@p.Stock bajo</span> }
                     else
-                    {<span class="b-green">@p.Stock</span>}
+                    { <span class="b-green">@p.Stock</span>}
                     </td>
                     <td>@(p.Activo ? Html.Raw("<span class=\"b-green\">Activo</span>") : Html.Raw("<span class=\"b-red\">Inactivo</span>"))</td>
                     <td style="display:flex;gap:.3rem">
@@ -36,4 +80,61 @@
             }
         </tbody>
     </table>
+    <div id="sin-resultados" style="display:none;text-align:center;padding:2.5rem;color:var(--text3)">
+        <i class="bi bi-search" style="font-size:2rem;display:block;margin-bottom:.5rem"></i>
+        Sin resultados para tu búsqueda
+    </div>
 </div>
+
+<script>
+    let timeout = null;
+
+    document.getElementById('buscador').addEventListener('input', function () {
+        clearTimeout(timeout);
+        const q = this.value.trim();
+        const spinner = document.getElementById('spinner');
+
+        timeout = setTimeout(function () {
+            spinner.style.display = 'block';
+
+            fetch('/Productos/Buscar?q=' + encodeURIComponent(q))
+                .then(r => r.json())
+                .then(data => {
+                    spinner.style.display = 'none';
+                    const tbody = document.getElementById('tabla-productos');
+                    const sinRes = document.getElementById('sin-resultados');
+                    const contador = document.getElementById('contador');
+
+                    contador.textContent = data.length + ' producto(s)';
+
+                    if (data.length === 0) {
+                        tbody.innerHTML = '';
+                        sinRes.style.display = 'block';
+                        return;
+                    }
+
+                    sinRes.style.display = 'none';
+                    tbody.innerHTML = data.map(p => `
+                        <tr class="tr-fade">
+                            <td style="color:var(--text3);font-size:.8rem">#${p.Id}</td>
+                            <td style="color:var(--text);font-weight:500">${p.Nombre}</td>
+                            <td><span class="b-blue">${p.Categoria}</span></td>
+                            <td class="text-g">$${parseFloat(p.Precio).toFixed(2)}</td>
+                            <td>${p.Stock === 0
+                            ? '<span class="b-red">Agotado</span>'
+                            : p.Stock < 10
+                                ? '<span class="b-yellow">' + p.Stock + ' bajo</span>'
+                                : '<span class="b-green">' + p.Stock + '</span>'
+                        }</td>
+                            <td>${p.Activo ? '<span class="b-green">Activo</span>' : '<span class="b-red">Inactivo</span>'}</td>
+                            <td style="display:flex;gap:.3rem">
+                                <a href="/Productos/Edit/${p.Id}" class="bi-btn"><i class="bi bi-pencil"></i></a>
+                                <a href="/Productos/Delete/${p.Id}" class="bi-btn bi-btn-d"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                    `).join('');
+                })
+                .catch(() => { spinner.style.display = 'none'; });
+        }, 350);
+    });
+</script>

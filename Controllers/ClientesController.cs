@@ -56,8 +56,15 @@ namespace SistemaVentas.Controllers
 
         public ActionResult Delete(int id)
         {
+            if (!EstaLogueado()) return RedirectToAction("Login", "Auth");
             var cliente = db.Clientes.Find(id);
             if (cliente == null) return HttpNotFound();
+
+            // Verificar si tiene ventas asociadas
+            bool tieneVentas = db.Ventas.Any(v => v.ClienteId == id);
+            ViewBag.TieneVentas = tieneVentas;
+            ViewBag.TotalVentas = db.Ventas.Count(v => v.ClienteId == id);
+
             return View(cliente);
         }
 
@@ -65,11 +72,22 @@ namespace SistemaVentas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            if (!EstaLogueado()) return RedirectToAction("Login", "Auth");
+
+            bool tieneVentas = db.Ventas.Any(v => v.ClienteId == id);
+            if (tieneVentas)
+            {
+                TempData["Error"] = "No se puede eliminar este cliente porque tiene ventas registradas.";
+                return RedirectToAction("Index");
+            }
+
             var cliente = db.Clientes.Find(id);
             db.Clientes.Remove(cliente);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        private bool EstaLogueado() => Session["UsuarioId"] != null;
 
         protected override void Dispose(bool disposing)
         {

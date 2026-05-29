@@ -5,20 +5,43 @@
     <div><div class="ph-title" style="color:#f87171"><i class="bi bi-trash"></i> Eliminar Categoría</div></div>
     <a href="/Categorias" class="btn-s"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<div class="card-dark" style="max-width:480px;border-color:rgba(239,68,68,.25)">
-    <div style="padding:1.5rem;text-align:center">
-        <div style="width:60px;height:60px;background:rgba(239,68,68,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
-            <i class="bi bi-tag" style="font-size:1.5rem;color:#f87171"></i>
-        </div>
-        <p style="color:var(--text2);margin-bottom:1.5rem">¿Eliminar la categoría <strong style="color:var(--text)">@Model.Nombre</strong>?</p>
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.Id)
-            <div style="display:flex;gap:.5rem;justify-content:center">
-                <button type="submit" class="btn-danger"><i class="bi bi-trash"></i> Sí, eliminar</button>
-                <a href="/Categorias" class="btn-s">Cancelar</a>
+
+@if ((bool)ViewBag.TieneProductos)
+{
+    <div class="card-dark" style="max-width:500px;border-color:rgba(245,158,11,.3)">
+        <div style="padding:1.5rem;text-align:center">
+            <div style="width:60px;height:60px;background:rgba(245,158,11,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+                <i class="bi bi-shield-exclamation" style="font-size:1.6rem;color:#fbbf24"></i>
             </div>
-        }
+            <h3 style="color:#fbbf24;font-family:var(--fh);margin-bottom:.5rem">No se puede eliminar</h3>
+            <p style="color:var(--text2);margin-bottom:.5rem">
+                La categoría <strong style="color:var(--text)">@Model.Nombre</strong> tiene
+                <span class="b-yellow">@ViewBag.TotalProductos producto(s)</span> asociado(s).
+            </p>
+            <p style="color:var(--text3);font-size:.85rem;margin-bottom:1.5rem">
+                Reasigna o elimina los productos de esta categoría antes de eliminarla.
+            </p>
+            <a href="/Categorias" class="btn-s"><i class="bi bi-arrow-left"></i> Volver</a>
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="card-dark" style="max-width:480px;border-color:rgba(239,68,68,.25)">
+        <div style="padding:1.5rem;text-align:center">
+            <div style="width:60px;height:60px;background:rgba(239,68,68,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+                <i class="bi bi-tag" style="font-size:1.5rem;color:#f87171"></i>
+            </div>
+            <p style="color:var(--text2);margin-bottom:1.5rem">¿Eliminar la categoría <strong style="color:var(--text)">@Model.Nombre</strong>?</p>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.Id)
+                <div style="display:flex;gap:.5rem;justify-content:center">
+                    <button type="submit" class="btn-danger"><i class="bi bi-trash"></i> Sí, eliminar</button>
+                    <a href="/Categorias" class="btn-s">Cancelar</a>
+                </div>
+            }
+        </div>
+    </div>
+}

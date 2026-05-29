@@ -2,20 +2,54 @@
 @{ ViewBag.Title = "Ventas"; }
 
 <div class="ph">
-    <div>
-        <div class="ph-title"><i class="bi bi-cart3" style="font-size:1.3rem"></i> Ventas</div>
-        <div class="ph-sub">@Model.Count() venta(s) registrada(s)</div>
-    </div>
+    <div><div class="ph-title"><i class="bi bi-cart3"></i> Ventas</div><div class="ph-sub" id="contador-ventas">@Model.Count() venta(s)</div></div>
     <div style="display:flex;gap:.5rem">
         <a href="/Ventas/Reporte" class="btn-s"><i class="bi bi-bar-chart"></i> Reporte</a>
         <a href="/Ventas/Create" class="btn-p"><i class="bi bi-plus-lg"></i> Nueva Venta</a>
     </div>
 </div>
 
+<!-- FILTROS AJAX -->
+<div class="card-dark" style="padding:1rem;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+        <div style="position:relative;flex:1;min-width:200px">
+            <i class="bi bi-search" style="position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.9rem"></i>
+            <input type="text" id="buscador-ventas" placeholder="Buscar por cliente, vendedor..."
+                   style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.68rem 1rem .68rem 2.5rem;color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s"
+                   onfocus="this.style.borderColor='var(--accent)'"
+                   onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+            <label style="font-size:.78rem;color:var(--text3);white-space:nowrap">Desde</label>
+            <input type="date" id="fecha-desde"
+                   style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.55rem .8rem;color:var(--text);font-size:.85rem;outline:none;transition:border-color .2s"
+                   onfocus="this.style.borderColor='var(--accent)'"
+                   onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+            <label style="font-size:.78rem;color:var(--text3);white-space:nowrap">Hasta</label>
+            <input type="date" id="fecha-hasta"
+                   style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.55rem .8rem;color:var(--text);font-size:.85rem;outline:none;transition:border-color .2s"
+                   onfocus="this.style.borderColor='var(--accent)'"
+                   onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <button onclick="limpiarFiltros()" class="btn-s" style="white-space:nowrap;padding:.55rem .9rem;font-size:.82rem">
+            <i class="bi bi-x-lg"></i> Limpiar
+        </button>
+        <div id="spinner-ventas" style="display:none;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite"></div>
+    </div>
+</div>
+
+<style>
+@@keyframes spin { to { transform: rotate(360deg); } }
+.tr-fade { animation: fadeIn .2s ease; }
+@@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+</style>
+
 <div class="card-dark">
     <table class="sv-table">
         <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Vendedor</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead>
-        <tbody>
+        <tbody id="tabla-ventas">
             @foreach (var v in Model)
             {
                 <tr>
@@ -30,8 +64,77 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--text3)">Sin ventas registradas — <a href="/Ventas/Create">Crear primera venta</a></td></tr>
+                <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--text3)">Sin ventas — <a href="/Ventas/Create">Crear primera venta</a></td></tr>
             }
         </tbody>
     </table>
+    <div id="sin-ventas" style="display:none;text-align:center;padding:2.5rem;color:var(--text3)">
+        <i class="bi bi-search" style="font-size:2rem;display:block;margin-bottom:.5rem"></i>
+        Sin resultados para tu búsqueda
+    </div>
 </div>
+
+<script>
+    let timeoutV = null;
+
+    function buscarVentas() {
+        clearTimeout(timeoutV);
+        const spinner = document.getElementById('spinner-ventas');
+        timeoutV = setTimeout(function () {
+            const q = document.getElementById('buscador-ventas').value.trim();
+            const desde = document.getElementById('fecha-desde').value;
+            const hasta = document.getElementById('fecha-hasta').value;
+
+            let url = '/Ventas/Buscar?q=' + encodeURIComponent(q);
+            if (desde) url += '&desde=' + desde;
+            if (hasta) url += '&hasta=' + hasta;
+
+            spinner.style.display = 'block';
+
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    spinner.style.display = 'none';
+                    const tbody = document.getElementById('tabla-ventas');
+                    const sinRes = document.getElementById('sin-ventas');
+                    const contador = document.getElementById('contador-ventas');
+
+                    contador.textContent = data.length + ' venta(s)';
+
+                    if (data.length === 0) {
+                        tbody.innerHTML = '';
+                        sinRes.style.display = 'block';
+                        return;
+                    }
+
+                    sinRes.style.display = 'none';
+                    tbody.innerHTML = data.map(v => {
+                        const fecha = new Date(v.Fecha);
+                        const fechaStr = isNaN(fecha) ? v.Fecha : fecha.toLocaleDateString('es-SV') + ' ' + fecha.toLocaleTimeString('es-SV', {hour:'2-digit',minute:'2-digit'});
+                        return `
+                        <tr class="tr-fade">
+                            <td style="color:var(--text3);font-size:.8rem">#${v.Id}</td>
+                            <td style="font-size:.82rem">${fechaStr}</td>
+                            <td style="color:var(--text)">${v.Cliente}</td>
+                            <td>${v.Vendedor}</td>
+                            <td class="text-g fw7">$${parseFloat(v.Total).toFixed(2)}</td>
+                            <td><span class="b-green">${v.Estado}</span></td>
+                            <td><a href="/Ventas/Details/${v.Id}" class="bi-btn"><i class="bi bi-eye"></i></a></td>
+                        </tr>`;
+                    }).join('');
+                })
+                .catch(() => { spinner.style.display = 'none'; });
+        }, 350);
+    }
+
+    function limpiarFiltros() {
+        document.getElementById('buscador-ventas').value = '';
+        document.getElementById('fecha-desde').value = '';
+        document.getElementById('fecha-hasta').value = '';
+        buscarVentas();
+    }
+
+    document.getElementById('buscador-ventas').addEventListener('input', buscarVentas);
+    document.getElementById('fecha-desde').addEventListener('change', buscarVentas);
+    document.getElementById('fecha-hasta').addEventListener('change', buscarVentas);
+</script>
